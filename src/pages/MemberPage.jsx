@@ -10,6 +10,7 @@ export function MemberPage() {
   const navigate = useNavigate();
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
   const [paymentError, setPaymentError] = useState('');
+  const initials = `${user?.firstName?.[0] || ''}${user?.lastName?.[0] || ''}`.toUpperCase();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -59,22 +60,40 @@ export function MemberPage() {
           </div>
         </Link>
         <div className="top-actions">
-          <p className="welcome-text">
-            Welcome {user.firstName} {user.lastName}
-          </p>
-          <button type="button" className="btn-ghost" onClick={() => navigate('/')}>
-            Home
-          </button>
           <button
             type="button"
-            className="btn-ghost"
-            onClick={async () => {
-              await logout();
-              navigate('/');
-            }}
+            className="btn-ghost home-btn-desktop"
+            onClick={() => navigate('/')}
           >
-            Log out
+            Home
           </button>
+          <details className="profile-menu">
+            <summary className="profile-summary" aria-label="Open profile menu">
+              <span className="profile-avatar">{initials || 'U'}</span>
+            </summary>
+            <div className="profile-dropdown">
+              <p className="profile-name">
+                {user.firstName} {user.lastName}
+              </p>
+              <button
+                type="button"
+                className="profile-home-btn"
+                onClick={() => navigate('/')}
+              >
+                Home
+              </button>
+              <button
+                type="button"
+                className="profile-logout-btn"
+                onClick={async () => {
+                  await logout();
+                  navigate('/');
+                }}
+              >
+                Log out
+              </button>
+            </div>
+          </details>
         </div>
       </header>
 
