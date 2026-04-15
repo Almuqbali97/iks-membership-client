@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { apiJson } from '../api.js';
+import { apiJson, setAuthToken } from '../api.js';
 
 const AuthContext = createContext(null);
 
@@ -24,6 +24,7 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(async () => {
     await apiJson('/auth/logout', { method: 'POST' });
+    setAuthToken('');
     setUser(null);
   }, []);
 

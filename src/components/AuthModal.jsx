@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { apiJson } from '../api.js';
+import { apiJson, setAuthToken } from '../api.js';
 
 const initialSignup = {
   firstName: '',
@@ -119,6 +119,7 @@ export function AuthModal({ open, onClose, onAuthed }) {
           purpose: otpPurpose,
         },
       });
+      setAuthToken(data?.token || '');
       onAuthed(data.user);
       onClose();
     } catch (err) {
