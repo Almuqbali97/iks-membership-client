@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.avif';
+import { apiJson } from '../api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { MEMBERSHIP_BENEFITS } from '../data/membershipBenefits.js';
 
 export function MemberPage() {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
-  const [showPaymentNotice, setShowPaymentNotice] = useState(false);
+  const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
 
   useEffect(() => {
     if (!loading && !user) {
@@ -25,13 +27,41 @@ export function MemberPage() {
 
   const isMember = Boolean(user.membershipPaidAt && user.membershipCode);
 
+  async function handleCreateCheckout() {
+    if (isCreatingCheckout || isMember) return;
+    setPaymentError('');
+    setIsCreatingCheckout(true);
+    try {
+      const res = await apiJson('/payment/create-membership-checkout', { method: 'POST' });
+      if (!res?.success || !res?.sessionUrl) {
+        throw new Error('Invalid payment session response');
+      }
+      window.location.href = res.sessionUrl;
+    } catch (error) {
+      setPaymentError(
+        error?.data?.message ||
+          error?.data?.error ||
+          error?.message ||
+          'Could not start payment. Please try again.'
+      );
+    } finally {
+      setIsCreatingCheckout(false);
+    }
+  }
+
   return (
     <div className="page member">
       <header className="top-bar">
         <Link to="/">
-          <img src={logo} alt="IKS" className="logo" />
+          <div className="brand">
+            <img src={logo} alt="IKS" className="logo" />
+            <div className="brand-text">International Keratoconus Society</div>
+          </div>
         </Link>
         <div className="top-actions">
+          <p className="welcome-text">
+            Welcome {user.firstName} {user.lastName}
+          </p>
           <button type="button" className="btn-ghost" onClick={() => navigate('/')}>
             Home
           </button>
@@ -80,53 +110,24 @@ export function MemberPage() {
                 <p className="price">
                   21 OMR <span className="tilde">(~</span> 50 USD<span className="tilde">)</span>
                 </p>
-                <p className="muted small">Online payment opening soon</p>
+                <p className="muted small">One-time secure checkout with Thawani</p>
               </div>
               <button
                 type="button"
                 className="btn-primary btn-large"
-                onClick={() => setShowPaymentNotice(true)}
+                onClick={handleCreateCheckout}
+                disabled={isCreatingCheckout}
               >
-                Pay securely
+                {isCreatingCheckout ? 'Redirecting…' : 'Pay securely'}
               </button>
+              {paymentError && <p className="form-error" style={{ marginTop: '0.75rem' }}>{paymentError}</p>}
             </>
           )}
         </div>
       </main>
-
-      {showPaymentNotice && (
-        <div
-          className="modal-backdrop"
-          role="presentation"
-          onMouseDown={() => setShowPaymentNotice(false)}
-        >
-          <div
-            className="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="payment-notice-title"
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              className="modal-close"
-              onClick={() => setShowPaymentNotice(false)}
-              aria-label="Close"
-            >
-              ×
-            </button>
-            <h2 id="payment-notice-title">Payment</h2>
-            <p className="muted" style={{ marginBottom: 0 }}>
-              Payment will be available within an hour.
-            </p>
-            <div className="form-actions" style={{ marginTop: '1.25rem', justifyContent: 'flex-end' }}>
-              <button type="button" className="btn-primary" onClick={() => setShowPaymentNotice(false)}>
-                OK
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <footer className="site-footer">
+        <small>© {new Date().getFullYear()} International Keratoconus Society. All rights reserved.</small>
+      </footer>
     </div>
   );
 }

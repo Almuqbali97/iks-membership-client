@@ -13,8 +13,16 @@ export function LandingPage() {
   return (
     <div className="page landing">
       <header className="top-bar">
-        <img src={logo} alt="IKS" className="logo" />
+        <div className="brand">
+          <img src={logo} alt="IKS" className="logo" />
+          <div className="brand-text">International Keratoconus Society</div>
+        </div>
         <div className="top-actions">
+          {!loading && user && (
+            <p className="welcome-text">
+              Welcome {user.firstName} {user.lastName}
+            </p>
+          )}
           {!loading && user && (
             <button type="button" className="btn-ghost" onClick={() => navigate('/member')}>
               Membership
@@ -66,6 +74,9 @@ export function LandingPage() {
           navigate('/member');
         }}
       />
+      <footer className="site-footer">
+        <small>© {new Date().getFullYear()} International Keratoconus Society. All rights reserved.</small>
+      </footer>
     </div>
   );
 }

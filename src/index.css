@@ -59,6 +59,19 @@ a {
   margin-bottom: 2rem;
 }
 
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.brand-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+  letter-spacing: 0.01em;
+}
+
 .logo {
   height: 52px;
   width: auto;
@@ -69,6 +82,13 @@ a {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  align-items: center;
+}
+
+.welcome-text {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.9rem;
 }
 
 .landing-main {
@@ -396,6 +416,13 @@ a {
   margin-top: 2rem;
 }
 
+.site-footer {
+  margin-top: 2rem;
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 0.82rem;
+}
+
 /* ── Payment result card ───────────────────────────────────────────────────── */
 .result-card {
   max-width: 520px;
@@ -479,6 +506,10 @@ a {
 }
 
 @media (max-width: 680px) {
+  .brand-text {
+    display: none;
+  }
+
   .modal {
     width: 100%;
     max-width: 100%;
